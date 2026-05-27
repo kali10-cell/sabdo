@@ -1,216 +1,25 @@
-// "use client";
-
-// export default function ListaObjetos({
-//   objetos,
-//   setObjetos
-// }) {
-
-//   const eliminarObjeto = (id) => {
-
-//     const objetosFiltrados = objetos.filter(
-//       (objeto) => objeto.id !== id
-//     );
-
-//     setObjetos(objetosFiltrados);
-//   };
-
-//   const sumarCantidad = (id) => {
-
-//     const objetosActualizados = objetos.map((objeto) =>
-
-//       objeto.id === id
-//         ? {
-//             ...objeto,
-//             cantidad: objeto.cantidad + 1
-//           }
-//         : objeto
-//     );
-
-//     setObjetos(objetosActualizados);
-//   };
-
-//   const restarCantidad = (id) => {
-
-//     const objetosActualizados = objetos.map((objeto) =>
-
-//       objeto.id === id
-//         ? {
-//             ...objeto,
-//             cantidad: objeto.cantidad - 1
-//           }
-//         : objeto
-//     );
-
-//     setObjetos(objetosActualizados);
-//   };
-
-//   return (
-
-//     <section>
-
-//       {objetos.map((objeto) => (
-
-//         <article key={objeto.id}>
-
-//           <h2>{objeto.nombre}</h2>
-
-//           <p>Rareza: {objeto.rareza}</p>
-
-//           <p>Cantidad: {objeto.cantidad}</p>
-
-//           <button onClick={() => sumarCantidad(objeto.id)}>
-//             +1
-//           </button>
-
-//           <button onClick={() => restarCantidad(objeto.id)}>
-//             -1
-//           </button>
-
-//           <button onClick={() => eliminarObjeto(objeto.id)}>
-//             Eliminar
-//           </button>
-
-//         </article>
-
-//       ))}
-
-//     </section>
-//   );
-// }
-
-
-"use client";
-
-// NUEVO
-// IMPORTAR SUPABASE
-import { supabase } from "@/utils/supabase/client";
-
-export default function ListaObjetos({
-  objetos,
-  setObjetos
-}) {
-
-
-
-
-  // CAMBIADO
-  // ANTES:
-  // const eliminarObjeto = (id) => {
-
-  // AHORA:
-  // async PORQUE USA SUPABASE
-
-  const eliminarObjeto = async (id) => {
-
-
-
-    // NUEVO
-    // BORRAR EN SUPABASE
-
-    const { error } = await supabase
-
-      .from("objetos")
-
-      .delete()
-
-      .eq("id", id);
-
-
-
-    // SI HAY ERROR
-    if(error){
-
-      console.log(error);
-
-    } else {
-
-
-
-      // ESTO YA ESTABA
-      // BORRAR EN REACT
-
-      const objetosFiltrados = objetos.filter(
-        (objeto) => objeto.id !== id
-      );
-
-      setObjetos(objetosFiltrados);
-
-    }
-
-  };
-
-
-
-
-
-  const sumarCantidad = (id) => {
-
-    const objetosActualizados = objetos.map((objeto) =>
-
-      objeto.id === id
-        ? {
-            ...objeto,
-            cantidad: objeto.cantidad + 1
-          }
-        : objeto
-    );
-
-    setObjetos(objetosActualizados);
-  };
-
-
-
-
-
-  const restarCantidad = (id) => {
-
-    const objetosActualizados = objetos.map((objeto) =>
-
-      objeto.id === id
-        ? {
-            ...objeto,
-            cantidad: objeto.cantidad - 1
-          }
-        : objeto
-    );
-
-    setObjetos(objetosActualizados);
-  };
-
-
-
-
-
-  return (
-
-    <section>
-
-      {objetos.map((objeto) => (
-
-        <article key={objeto.id}>
-
-          <h2>{objeto.nombre}</h2>
-
-          <p>Rareza: {objeto.rareza}</p>
-
-          <p>Cantidad: {objeto.cantidad}</p>
-
-          <button onClick={() => sumarCantidad(objeto.id)}>
-            +1
-          </button>
-
-          <button onClick={() => restarCantidad(objeto.id)}>
-            -1
-          </button>
-
-          <button onClick={() => eliminarObjeto(objeto.id)}>
-            Eliminar
-          </button>
-
-        </article>
-
-      ))}
-
-    </section>
-  );
-}
+/*
+APUNTE IMPORTANTE (para examen):
+
+La lista "pinta" cuando hace map del estado:
+
+  {objetos.map((obj) => (
+    <article key={obj.id}>
+      <h2>{obj.nombre}</h2>
+    </article>
+  ))}
+
+Version "ANTES de API / Supabase":
+- el estado vive en app/page.jsx con useState([...])
+- ListaObjetos recibe props: objetos, setObjetos
+
+Version "CON API / Supabase":
+- el estado vive en un store (Zustand)
+- ListaObjetos lee del store y llama acciones (fetchAll, deleteOne, etc)
+
+En este proyecto lo dejamos generico, por eso ListaObjetos ahora re-exporta CrudList.
+*/
+
+// Backward compatible re-export (old name used "objetos").
+// Prefer importing `CrudList` from "@/components/CrudList".
+export { default } from "@/components/CrudList";

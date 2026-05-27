@@ -1,111 +1,34 @@
-// "use client";
-
-// import { useState } from "react";
-
-// import FormularioObjetos from "@/components/FormularioObjetos";
-// import ListaObjetos from "@/components/ListaObjetos";
-
-// export default function Home() {
-
-//   const [objetos, setObjetos] = useState([]);
-
-//   return (
-//     <main>
-
-//       <h1>Inventario mágico</h1>
-
-//       <FormularioObjetos
-//         objetos={objetos}
-//         setObjetos={setObjetos}
-//       />
-
-//       <ListaObjetos
-//         objetos={objetos}
-//         setObjetos={setObjetos}
-//       />
-
-//     </main>
-//   );
-// }
-
-
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-// NUEVO
-// IMPORTAR SUPABASE
-import { supabase } from "@/utils/supabase/client";
-
-import FormularioObjetos from "@/components/FormularioObjetos";
-import ListaObjetos from "@/components/ListaObjetos";
+import CrudForm from "@/components/CrudForm";
+import CrudList from "@/components/CrudList";
+import { useCrudStore } from "@/store/crudStore";
+import { CRUD_CONFIG } from "@/utils/crudConfig";
 
 export default function Home() {
-
-  const [objetos, setObjetos] = useState([]);
-
-
-
-
-  // NUEVO
-  // CUANDO CARGA LA PAGINA
-  // TRAER OBJETOS DE SUPABASE
+  const fetchAll = useCrudStore((state) => state.fetchAll);
+  const loading = useCrudStore((state) => state.loading);
+  const error = useCrudStore((state) => state.error);
 
   useEffect(() => {
-
-    obtenerObjetos();
-
-  }, []);
-
-
-
-
-  // NUEVO
-  // SELECT * FROM objetos
-
-  const obtenerObjetos = async () => {
-
-    const { data, error } = await supabase
-
-      .from("objetos")
-
-      .select("*");
-
-
-
-    // SI HAY ERROR
-    if(error){
-
-      console.log(error);
-
-    } else {
-
-      // GUARDAR DATOS EN REACT
-      setObjetos(data);
-
-    }
-
-  };
-
-
-
+    fetchAll();
+  }, [fetchAll]);
 
   return (
-    <main>
+    <main className="inventario">
+      <h1>{CRUD_CONFIG.title}</h1>
 
-      <h1>Inventario mágico</h1>
+      <CrudForm />
 
-      <FormularioObjetos
-        objetos={objetos}
-        setObjetos={setObjetos}
-      />
+      {loading ? <p>Cargando...</p> : null}
+      {error ? (
+        <p className="error-text">Error: {String(error.message ?? error)}</p>
+      ) : null}
 
-      <ListaObjetos
-        objetos={objetos}
-        setObjetos={setObjetos}
-      />
-
+      <CrudList />
     </main>
   );
 }
+
